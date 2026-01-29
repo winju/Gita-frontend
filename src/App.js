@@ -14,7 +14,7 @@ function App() {
     setAudioUrl("");
 
     try {
-      const res = await fetch("http://localhost:8000/ask", {
+      const res = await fetch("http://13.235.13.219:8000:8000/ask", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
