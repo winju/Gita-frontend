@@ -14,7 +14,7 @@ function App() {
     setAudioUrl("");
 
     try {
-      const res = await fetch("http://13.235.13.219:8000/ask", {
+      const res = await fetch("https://gita-spritual.duckdns.org/ask", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
