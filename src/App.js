@@ -7,66 +7,65 @@ function App() {
   const [audioUrl, setAudioUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
-const handleVoiceInput = () => {
-  console.log("🎤 Voice input started...");
+  const handleVoiceInput = () => {
+    console.log("🎤 Voice input started...");
 
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert("Voice input not supported in this browser 🙏");
-    return;
-  }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Voice input not supported in this browser 🙏");
+      return;
+    }
 
-  const recognition = new SpeechRecognition();
-  recognition.lang = "en-IN"; // works best in Chrome
-  recognition.interimResults = false;
-  recognition.continuous = false;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US"; // Chrome works best with en-US
+    recognition.interimResults = false;
+    recognition.continuous = false;
 
-  recognition.onstart = () => {
-    console.log("✅ Listening...");
+    recognition.onstart = () => console.log("✅ Listening...");
+
+    recognition.onresult = (event) => {
+      const voiceText = event.results[0][0].transcript;
+      console.log("🎤 Recognized:", voiceText);
+      setQuery(voiceText);
+
+      // Auto trigger Ask after speech ends
+      setTimeout(() => {
+        console.log("⚡ Auto-triggering Ask call...");
+        handleSubmit(null, voiceText); // pass recognized text explicitly
+      }, 300);
+    };
+
+    recognition.onerror = (event) => console.error("❌ Error:", event.error);
+    recognition.onend = () => console.log("ℹ️ Voice input ended.");
+
+    recognition.start();
   };
 
-  recognition.onresult = (event) => {
-    const voiceText = event.results[0][0].transcript;
-    console.log("🎤 Recognized:", voiceText);
-    setQuery(voiceText); // insert into text field
-  };
+  const handleSubmit = async (e, overrideQuery) => {
+    if (e) e.preventDefault();
+    const finalQuery = overrideQuery || query;
+    if (!finalQuery.trim()) return;
 
-  recognition.onerror = (event) => {
-    console.error("❌ Error:", event.error);
-  };
-
-  recognition.onend = () => {
-    console.log("ℹ️ Voice input ended.");
-  };
-
-  recognition.start();
-};
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
     setLoading(true);
     setResponseText("");
     setAudioUrl("");
-    console.log("📡 Sending query to backend:", query);
+    console.log("📡 Sending query:", finalQuery);
 
     try {
       const res = await fetch("https://gita-spritual.duckdns.org/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query: finalQuery }),
       });
 
       if (!res.ok) {
-        await res.json();
         setResponseText("Only devotional questions are allowed 🙏");
-        console.log("⚠️ Backend rejected query.");
         return;
       }
 
       const data = await res.json();
       setResponseText(data.text);
       setAudioUrl(data.audio_url);
-      console.log("✅ Backend response received:", data);
     } catch (err) {
       console.error("❌ Error calling backend:", err);
       setResponseText("Error: " + err.message);
@@ -82,16 +81,11 @@ const handleVoiceInput = () => {
         <input
           type="text"
           value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            console.log("✍️ Input manually updated:", e.target.value);
-          }}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder="Enter your question..."
         />
         <button type="submit">Ask</button>
-        <button type="button" onClick={handleVoiceInput}>
-          🎤 Speak
-        </button>
+        <button type="button" onClick={handleVoiceInput}>🎤 Speak</button>
       </form>
 
       {loading && <p>Loading response...</p>}
