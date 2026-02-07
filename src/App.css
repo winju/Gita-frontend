@@ -9,7 +9,7 @@ body {
 .App {
   text-align: center;
   min-height: 100vh;
-  padding: 40px;
+  padding: 40px 20px;
 }
 
 h1 {
@@ -21,12 +21,15 @@ h1 {
 form {
   margin: 20px auto;
   display: flex;
+  flex-wrap: wrap; /* allows wrapping on small screens */
   justify-content: center;
   gap: 12px;
 }
 
 input[type="text"] {
-  width: 320px;
+  flex: 1 1 250px; /* flexible width */
+  min-width: 200px;
+  max-width: 400px;
   padding: 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -54,7 +57,7 @@ button:hover {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   text-align: left;
-  max-width: 600px;
+  max-width: 700px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -62,4 +65,28 @@ button:hover {
 .response-box h3 {
   margin-top: 0;
   color: #4a2c2a;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .App {
+    padding: 20px 10px;
+  }
+
+  form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  input[type="text"] {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .response-box {
+    padding: 16px;
+  }
 }
