@@ -76,7 +76,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Devotional Q&A</h1>
+      <h1>Divya Vani</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
